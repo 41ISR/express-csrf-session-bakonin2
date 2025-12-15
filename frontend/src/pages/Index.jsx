@@ -1,9 +1,26 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 const Index = () => {
+    const handleSubmit =  (e) => {
+        console.log(clicks)
+    }
+    const formRef = useref(null)
+    const navigate = useNavigate()
     const [clicks, setClicks] = useState(0)
+    useEffect(()=> {
+        const interval = setInterval(()=> {
+            formRef.current && handleSubmit()
+        }, 5000)
+        return () => {clearInterval(interval)}
+    }, [])
+
     const handleClick = () => {
         setClicks((val) => val + 1)
+    }
+
+    const handleLogout = () => {
+        navigate("/logout")
     }
     return (
         <div className="container">
@@ -12,7 +29,7 @@ const Index = () => {
                 <h1>🎮 Кликер Игра</h1>
                 <div className="user-info">
                     <span><strong>Имя пользователя</strong></span>
-                    <button className="logout-btn">Выйти</button>
+                    <button onClick={handleLogout} className="logout-btn">Выйти</button>
                 </div>
             </div>
             <div className="game-area">
@@ -20,7 +37,9 @@ const Index = () => {
                 <div className="click-counter">
                     <h2>Твои клики</h2>
                     <div className="clicks-display">{clicks}</div>
+                    <form onSubmit={(e) => e.preventDefault()} ref={formRef}>
                     <button className="click-button" onClick={handleClick}>👆 КЛИКНИ!</button>
+                    </form>
                 </div>
 
                 <div className="leaderboard">

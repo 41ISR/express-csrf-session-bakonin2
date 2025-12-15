@@ -36,13 +36,15 @@ app.use(session({
 app.get("/auth/me", (req, res) => {
     console.log(req.session)
     if (req.session.userId) {
-        return res.status(200).json({logged: true, user: {
-            userId: req.session.userId,
-            email: req.session.email
-        }})
+        return res.status(200).json({
+            logged: true, user: {
+                userId: req.session.userId,
+                email: req.session.email
+            }
+        })
     }
 
-    return res.status(401).json({logged: false})
+    return res.status(401).json({ logged: false })
 })
 
 app.post("/auth/signup", (req, res) => {
@@ -70,12 +72,12 @@ app.post("/auth/signin", (req, res) => {
     const user = db
         .prepare(`SELECT * FROM users WHERE email = ?`)
         .get(email)
-    if (!user) 
+    if (!user)
         res
             .status(401)
             .json({ error: "Неправильные данные" })
     const validPassword = bcrypt.compareSync(password, user.password)
-    if (!validPassword) 
+    if (!validPassword)
         res
             .status(401)
             .json({ error: "Неправильные данные" })
@@ -88,15 +90,24 @@ app.post("/auth/signin", (req, res) => {
 
 app.post("/auth/logout", (req, res) => {
     req.session.destroy((err) => {
-        err && res.status(500).json({error: "Не получилось выйти"})
+        err && res.status(500).json({ error: "Не получилось выйти" })
         res.clearCookie("sessionId")
-        res.status(200).json({message: "Выход успешен"})
+        res.status(200).json({ message: "Выход успешен" })
     })
 })
 
 // 1. Кинуть юзера на /logout
 // 2. Там в useEffect сделать запрос на /auth/logout и очистить
 // user в authStore
+
+app.post("/click", (req, res) => {
+    const { clicks } = req.body
+    const updateClicks = db
+        .prepare("UPDATE users SET cicks = ? WHERE id = ?")
+        .run(clicks, req.session.userId)
+    console.log(updateClicks)    
+    res.status(200).json({message: "updated"})
+})
 
 app.listen("3000", () => {
     console.log("Порт3000")

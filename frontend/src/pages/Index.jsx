@@ -1,27 +1,44 @@
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useRef, useState } from "react"
+import { data, useNavigate } from "react-router-dom"
 
 const Index = () => {
-    const handleSubmit =  (e) => {
-        console.log(clicks)
+    const handleSubmit = async (e) => {
+        try {
+            const res = await fetch("/click", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ clicks: clickRef.current })
+            })
+        }
+        catch (error) {
+            console.error(error)
+        }
     }
-    const formRef = useref(null)
-    const navigate = useNavigate()
-    const [clicks, setClicks] = useState(0)
-    useEffect(()=> {
-        const interval = setInterval(()=> {
-            formRef.current && handleSubmit()
-        }, 5000)
-        return () => {clearInterval(interval)}
-    }, [])
+}
+const formRef = useRef(null)
+const navigate = useNavigate()
+const [clicks, setClicks] = useState(0)
+const clickRef = useRef(null)
+useEffect(() => {
+    const interval = setInterval(() => {
+        formRef.current && handleSubmit()
+    }, 5000)
+    return () => { clearInterval(interval) }
+}, [])
 
-    const handleClick = () => {
-        setClicks((val) => val + 1)
-    }
+useEffect(() => {
+    clickRef.current = clicks
+}, [clicks])
 
-    const handleLogout = () => {
-        navigate("/logout")
-    }
+const handleClick = () => {
+    setClicks((val) => val + 1)
+}
+
+const handleLogout = () => {
+    navigate("/logout")
+
     return (
         <div className="container">
 
@@ -38,7 +55,7 @@ const Index = () => {
                     <h2>Твои клики</h2>
                     <div className="clicks-display">{clicks}</div>
                     <form onSubmit={(e) => e.preventDefault()} ref={formRef}>
-                    <button className="click-button" onClick={handleClick}>👆 КЛИКНИ!</button>
+                        <button className="click-button" onClick={handleClick}>👆 КЛИКНИ!</button>
                     </form>
                 </div>
 

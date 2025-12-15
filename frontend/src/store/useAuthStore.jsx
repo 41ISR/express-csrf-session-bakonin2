@@ -4,7 +4,7 @@ export const useAuthStore = create((set, get) => ({
     user: undefined,
     checkAuth: async () => {
         try {
-            const res = await fetch("https://shiny-broccoli-7r4gg65p9gr2xxr6-3000.app.github.dev/auth/me", {
+            const res = await fetch("https://fantastic-spoon-g7jjg65v9wg395gw-3000.app.github.dev/auth/me", {
                 credentials: "include"
             })
 
